@@ -1,10 +1,8 @@
 FROM ruby:2.5-alpine
 
-ENV TRAVIS_CONDITIONS_CLI_VERSION="1.0"
+ENV TRAVIS_CONDITIONS_CLI_VERSION 1.0
 
 RUN gem install travis-conditions --version "${TRAVIS_CONDITIONS_CLI_VERSION}"
-
-WORKDIR /app
 
 ENTRYPOINT [ "travis-conditions" ]
 
