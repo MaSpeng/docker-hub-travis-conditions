@@ -1,7 +1,23 @@
 version: 2
 
 .templates:
-  .build-template: &build-template
+  .validate_template: &validate_template
+    docker:
+      -
+        image: finalgene/hadolint:latest
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      -
+        run:
+          name: Validate Dockerfile
+          command: |
+            hadolint $VERSION/Dockerfile
+
+  .build-template: &build_template
     docker:
       -
         image: docker:18.05.0-ce-git
@@ -23,14 +39,23 @@ version: 2
             docker images
 
 jobs:
+  validate-1.0:
+    environment:
+      VERSION: "1.0"
+
+    <<: *validate_template
+
   build-1.0:
     environment:
       VERSION: "1.0"
 
-    <<: *build-template
+    <<: *build_template
 
 workflows:
   version: 2
   build:
     jobs:
-      - build-1.0
+      - validate-1.0
+      - build-1.0:
+          requires:
+            - validate-1.0
